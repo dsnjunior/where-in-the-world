@@ -1,0 +1,100 @@
+---
+import { Icon } from 'astro-icon'
+
+export interface Props {
+	value: string;
+}
+
+const { value } = Astro.props;
+---
+<form id="search-form" class="form">
+  <label for="search-input" class="element">
+    <span class="icon"><Icon pack="line-md" name="search" /></span>
+    <input name="search" type="search" id="search-input" value={value} />
+    <span class="label-text">Search for a country...</span>
+  </label>
+</form>
+<script>
+  const form = document.getElementById('search-form') as HTMLFormElement
+  const input = document.getElementById('search-input') as HTMLInputElement
+
+  let typingTimer: ReturnType<typeof setTimeout>
+  const typingInterval = 200
+
+  function dispatchSearchEvent(search: string) {
+    form.dispatchEvent(new CustomEvent('search', { detail: { search } }))
+    input.setAttribute('value', search)
+  }
+
+  input.addEventListener('input', () => {
+    clearTimeout(typingTimer)
+
+    typingTimer = setTimeout(function () {
+      dispatchSearchEvent(input.value)
+    }, typingInterval)
+  })
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault()
+
+    dispatchSearchEvent(input.value)
+  })
+
+	window.addEventListener('load', () => {
+    if(input.value) {
+      dispatchSearchEvent(input.value)
+    }
+	})
+</script>
+<style>
+  .form {
+    font-size: 1.4rem;
+  }
+  .form label {
+    display: block;
+    padding: 1.8rem 2rem 1.8rem 8rem;
+    border-radius: 0.4rem;
+    border: 1px solid transparent;
+    position: relative;
+    cursor: text;
+  }
+  .form label:focus-within {
+    border-color: currentColor;
+  }
+  .form .icon {
+    display: block;
+    position: absolute;
+    left: 2.8rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2.4rem;
+    height: 2.4rem;
+    pointer-events: none;
+  }
+  .form .label-text {
+    position: absolute;
+    top: 50%;
+    left: 7.5rem;
+    transform: translateY(-50%);
+    padding: 0 0.5rem;
+    background-color: hsl(var(--element-background-hsl));
+    border-radius: 0.2rem;
+    transition: all 0.2s ease;
+    cursor: text;
+  }
+  .form label:focus-within .label-text, .form input:not([value=""]) + .label-text {
+    top: 0;
+    left: 6.4rem;
+    transform: scale(0.8) translateY(-65%);
+  }
+  .form input {
+    display: block;
+    width: 100%;
+    border: 0;
+    background-color: transparent;
+    color: inherit;
+    outline: none;
+    padding-bottom: 1rem;
+    margin-bottom: -1rem;
+  }
+</style>
