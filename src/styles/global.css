@@ -1,0 +1,33 @@
+:root {
+  --foreground-hsl: var(--very-dark-blue-text-hsl);
+  --background-hsl: var(--very-light-gray-hsl);
+  --input-text-hsl: var(--dark-gray-hsl);
+  --element-background-hsl: var(--white-hsl);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-hsl: var(--white-hsl);
+    --background-hsl: var(--very-dark-blue-hsl);
+    --input-text-hsl: var(--white-hsl);
+    --element-background-hsl: var(--dark-blue-hsl);
+  }
+}
+
+body {
+  color: hsl(var(--foreground-hsl));
+  background: hsl(var(--background-hsl));
+}
+
+input::placeholder {
+  color: hsl(var(--input-text-hsl));
+}
+
+.element {
+  background: hsl(var(--element-background-hsl));
+}
+
+.grid-padding {
+  padding-left: 3rem;
+  padding-right: 3rem;
+}
