@@ -136,10 +136,24 @@ function createCountryUrl(path: string) {
   .searchbar {
     width: 60rem;
     max-width: 100%;
+    height: 5.7rem;
   }
   .filter {
     width: 20rem;
     max-width: 100%;
+    height: 5.7rem;
+  }
+  @media (max-width: 896px) {
+    .filters {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .searchbar {
+      width: 100%;
+    }
+    .filter {
+      margin-top: 4rem;
+    }
   }
   .list {
     display: grid;
