@@ -35,6 +35,12 @@ import Icon from './Icon.astro'
     justify-content: space-between;
     align-items: center;
   }
+  @media (max-width: 436px) {
+    .header {
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+  }
   .actions {
     display: flex;
     align-items: center;
@@ -50,12 +56,12 @@ import Icon from './Icon.astro'
     display: flex;
     align-items: center;
   }
-  .togler:last-child {
+  .toggler:last-child {
     margin-right: -0.5rem;
+    margin-left: 1rem;
   }
   a.toggler {
     text-decoration: none;
-
   }
   .toggler:hover, .toggler:focus {
     border-color: currentColor;
