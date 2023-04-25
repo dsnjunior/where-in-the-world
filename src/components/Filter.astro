@@ -1,0 +1,147 @@
+---
+import Icon from './Icon.astro'
+
+export interface Props {
+  value: string;
+  options: string[];
+}
+
+const { value, options } = Astro.props;
+---
+<div class="wrapper">
+  <button class="element button">
+    <label id="filter-label">
+      <input value={value} id="filter" readonly tabindex="-1" class="input" />
+      <span class="label-text">Filter by Region</span>
+    </label> <span class="icon"><Icon icon="chevron" /></span>
+  </button>
+  <ul class="options element" role="listbox" tabindex="-1" aria-labelledby="filter-label">
+    <li role="option" tabindex="0" aria-selected="true" data-value="">All</li>
+    {options.map((option) => (
+      <li role="option" tabindex="0" aria-selected="false" data-value={option}>{option}</li>
+    ))}
+  </ul>
+</div>
+<script>
+  const input = document.getElementById('filter') as HTMLInputElement
+  const options = document.querySelectorAll('.options li') as NodeListOf<HTMLLIElement>
+
+  function dispatchFilterEvent(filter: string) {
+    input.dispatchEvent(new CustomEvent('filter', { detail: { filter } }))
+    input.setAttribute('value', filter)
+    options.forEach((option) => {
+      option.setAttribute('aria-selected', `${option.dataset.value === filter}`)
+    })
+  }
+
+  options.forEach((option) => {
+    option.addEventListener('click', () => {
+      if(option.dataset.value === input.value || option.dataset.value === undefined) {
+        return
+      }
+      dispatchFilterEvent(option.dataset.value)
+    })
+    option.addEventListener('keyup', (e) => {
+      const event = e as KeyboardEvent
+      if((event.key !== 'Enter' && event.key !== ' ') || option.dataset.value === undefined || option.dataset.value === input.value) {
+        return
+      }
+      event.preventDefault()
+      dispatchFilterEvent(option.dataset.value)
+    })
+  })
+
+  window.addEventListener('load', () => {
+    if(input.value) {
+      dispatchFilterEvent(input.value)
+    }
+  })
+</script>
+<style>
+  .wrapper {
+    position: relative;
+    display: block;
+    font-size: 1.4rem;
+    height: 100%;
+  }
+  .button {
+    color: currentColor;
+    border-radius: 0.4rem;
+    padding: 1rem 5rem 1rem 2rem;
+    height: 100%;
+    width: 100%;
+    text-align: left;
+    border: 1px solid transparent;
+    outline: none;
+    display: flex;
+    align-items: center;
+  }
+  .icon {
+    width: 1.8rem;
+    position: absolute;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .button:hover, .button:focus {
+    border-color: currentColor;
+  }
+  .button label {
+    .form label:focus-within .label-text, .form input:not([value=""]) + .label-text {
+    top: 0;
+    left: 6.4rem;
+    transform: scale(0.8) translateY(-65%);
+  }
+  }
+  .options {
+    list-style: none;
+    padding: 0.8rem 0;
+    margin: 0;
+    margin-top: 0.4rem;
+    position: absolute;
+    width: 100%;
+    border-radius: 0.4rem;
+    display: none;
+  }
+  input.input {
+    background: transparent;
+    border: 0;
+    display: block;
+    width: 100%;
+    color: currentColor
+  }
+  .label-text {
+    position: absolute;
+    top: 50%;
+    left: 1.5rem;
+    transform: translateY(-50%);
+    padding: 0 0.5rem;
+    background-color: hsl(var(--element-background-hsl));
+    border-radius: 0.2rem;
+    transition-property: transform, top, left;
+    transition-duration: 0.2s;
+    transition-timing-function: ease;
+    cursor: text;
+  }
+  input.input:not([value=""]) + .label-text {
+    top: 0;
+    left: 0.4rem;
+    transform: scale(0.8) translateY(-65%);
+  }
+  .wrapper:focus-within .options {
+    display: block;
+  }
+  .options li {
+    padding: 0.8rem 2rem;
+    border: 1px solid transparent;
+    border-radius: 0.4rem;
+    outline: none;
+  }
+  .options li[aria-selected="true"] {
+    background: hsl(var(--foreground-hsl));
+    color: hsl(var(--background-hsl));
+  }
+  .options li:hover, .options li:focus {
+    border-color: currentColor;
+  }
+</style>
