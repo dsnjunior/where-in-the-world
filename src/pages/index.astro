@@ -1,15 +1,172 @@
 ---
----
+import { getCountries } from '../api/countries.api'
+import CountryCard from '../components/CountryCard.astro';
+import Filter from '../components/Filter.astro';
+import Header from '../components/Header.astro';
+import SearchBar from '../components/SearchBar.astro';
+import Layout from '../layouts/Layout.astro';
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+const countries = await getCountries()
+
+const regions = [
+  'Africa',
+  'Americas',
+  'Asia',
+  'Europe',
+  'Oceania',
+]
+
+const initialSearch =  Astro.url.searchParams.get("search") ?? ''
+const initialFilter =  Astro.url.searchParams.get("filter") ?? ''
+
+function createCountryUrl(path: string) {
+  const url = new URL(`/country/${path.toLowerCase()}`, import.meta.url)
+  return url.pathname
+}
+---
+<Layout title="Countries">
+  <Header />
+
+  <div class="grid-padding filters">
+    <div class="searchbar">
+      <SearchBar value={initialSearch} />
+    </div>
+    <div class="filter">
+      <Filter value={initialFilter} options={regions} />
+    </div>
+  </div>
+
+  <ul class="list grid-padding">
+    {countries.success && countries.data.map((country) => (
+      <li
+        data-searchable={`${country.name.common};${country.name.official};${Object.values(country.name.nativeName).map(({ common, official }) => `${common};${official}`).join(';')};${country.capital}`}
+        data-region={country.region}
+      >
+        <CountryCard
+          thumbnail={country.flags.svg}
+          thumbnailAlt={country.flags.alt}
+          name={country.name.common}
+          population={country.population.toLocaleString()}
+          region={country.region}
+          capital={country.capital.length ? country.capital[0] : 'N/A'}
+          url={createCountryUrl(country.name.common)}
+        />
+      </li>
+    ))}
+  </ul>
+</Layout>
+
+<script>
+  function updateSearchParams(key: string, value: string) {
+    const currentSearchParams = new URLSearchParams(window.location.search)
+
+    if(value) {
+      currentSearchParams.set(key, value)
+    } else {
+      currentSearchParams.delete(key)
+    }
+
+    const newSearchParamsToString = currentSearchParams.toString()
+
+    window.history.pushState('', '', newSearchParamsToString ? `?${newSearchParamsToString}` : '/')
+  }
+
+  const form = document.getElementById('search-form') as HTMLFormElement
+  form.addEventListener('search', (e) => {
+    const search = (e as CustomEvent<{ search: string }>).detail.search.trim()
+
+    updateSearchParams('search', search)
+
+    const countryCards = document.querySelectorAll<HTMLLIElement>('li[data-searchable]')
+
+    if (!search) {
+      countryCards.forEach((card) => {
+        card.classList.remove('search-hidden')
+      })
+      return
+    }
+
+    countryCards.forEach((card) => {
+      const countryName = card.dataset.searchable
+      if (!countryName) return
+
+      if (!countryName.toLowerCase().includes(search.toLowerCase())) {
+        card.classList.add('search-hidden')
+      } else {
+        card.classList.remove('search-hidden')
+      }
+    })
+  })
+
+  const filter = document.getElementById('filter') as HTMLInputElement
+  filter.addEventListener('filter', (e) => {
+    const filter = (e as CustomEvent<{ filter: string }>).detail.filter
+
+    updateSearchParams('filter', filter)
+
+    const countryCards = document.querySelectorAll<HTMLLIElement>('li[data-region]')
+
+    if (!filter) {
+      countryCards.forEach((card) => {
+        card.classList.remove('region-hidden')
+      })
+      return
+    }
+
+    countryCards.forEach((card) => {
+      const countryRegion = card.dataset.region
+
+      if (!countryRegion || countryRegion.toLowerCase() !== filter.toLowerCase()) {
+        card.classList.add('region-hidden')
+      } else {
+        card.classList.remove('region-hidden')
+      }
+    })
+  })
+</script>
+
+<style>
+  .filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+  .searchbar {
+    width: 60rem;
+    max-width: 100%;
+  }
+  .filter {
+    width: 20rem;
+    max-width: 100%;
+  }
+  .list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 26rem);
+    row-gap: 8rem;
+    column-gap: 2rem;
+    justify-content: space-between;
+    padding-bottom: 4rem;
+    list-style: none;
+  }
+
+  @media (max-width: 896px) {
+    .list {
+      column-gap: 8rem;
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 676px) {
+    .list {
+      row-gap: 4rem;
+      column-gap: 4rem;
+    }
+  }
+
+  .search-hidden,
+  .region-hidden {
+    display: none;
+  }
+</style>
