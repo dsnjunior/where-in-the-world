@@ -1,0 +1,10 @@
+---
+export interface Props {
+  icon: 'search' | 'light-mode' | 'dark-mode' | 'github';
+}
+
+const { icon } = Astro.props as Props;
+const { default: innerHTML } = await import(`../icons/${icon}.svg?raw`);
+---
+
+<Fragment set:html={innerHTML} />

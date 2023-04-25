@@ -1,0 +1,102 @@
+---
+import Icon from './Icon.astro'
+---
+<header class="element grid-padding header">
+  <h1>Where in the world?</h1>
+  <div class="actions">
+    <button class="toggler" id="color-scheme-toggler">
+      <span class="dark content">
+        <span class="icon"><Icon icon="dark-mode" /></span>
+        <span>Dark Mode</span>
+      </span>
+      <span class="light content">
+        <span class="icon"><Icon icon="light-mode" /></span>
+        <span>Light mode</span>
+      </span>
+    </button>
+    <a href="https://github.com/dsnjunior/where-in-the-world" rel="noopener" target="_blank" class="toggler content">
+      <span class="icon"><Icon icon="github" /></span>
+      <span>Github</span>
+    </a>
+  </div>
+</header>
+<script>
+  const toggler = document.getElementById('color-scheme-toggler') as HTMLButtonElement
+
+  toggler.addEventListener('click', () => {
+    document.body.classList.toggle('color-scheme-changed')
+  })
+</script>
+<style>
+  .header {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .actions {
+    display: flex;
+    align-items: center;
+  }
+  .toggler {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 0.4rem;
+    color: currentColor;
+    outline: none;
+    padding: 0 0.5rem 0 0.3rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+  .togler:last-child {
+    margin-right: -0.5rem;
+  }
+  a.toggler {
+    text-decoration: none;
+
+  }
+  .toggler:hover, .toggler:focus {
+    border-color: currentColor;
+  }
+  .content {
+    align-items: center;
+    font-size: 1.4rem;
+  }
+  .icon {
+    display: block;
+    width: 1.4rem;
+    margin-right: 0.4rem;
+  }
+
+  .dark {
+    display: none;
+  }
+  .light {
+    display: flex;
+  }
+  @media (prefers-color-scheme: dark) {
+    .dark {
+      display: flex;
+    }
+    .light {
+      display: none;
+    }
+  }
+
+  body.color-scheme-changed .dark {
+    display: flex;
+  }
+  body.color-scheme-changed .light {
+    display: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    body.color-scheme-changed .dark {
+      display: none;
+    }
+    body.color-scheme-changed .light {
+      display: flex;
+    }
+  }
+</style>
