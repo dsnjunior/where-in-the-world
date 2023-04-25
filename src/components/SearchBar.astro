@@ -1,5 +1,5 @@
 ---
-import { Icon } from 'astro-icon'
+import Icon from './Icon.astro'
 
 export interface Props {
   value: string;
@@ -9,7 +9,7 @@ const { value } = Astro.props;
 ---
 <form id="search-form" class="form">
   <label for="search-input" class="element">
-    <span class="icon"><Icon pack="line-md" name="search" /></span>
+    <span class="icon"><Icon icon="search" /></span>
     <input name="search" type="search" id="search-input" value={value} />
     <span class="label-text">Search for a country...</span>
   </label>
@@ -68,7 +68,6 @@ const { value } = Astro.props;
     top: 50%;
     transform: translateY(-50%);
     width: 2.4rem;
-    height: 2.4rem;
     pointer-events: none;
   }
   .form .label-text {
@@ -79,7 +78,9 @@ const { value } = Astro.props;
     padding: 0 0.5rem;
     background-color: hsl(var(--element-background-hsl));
     border-radius: 0.2rem;
-    transition: all 0.2s ease;
+    transition-property: transform, top, left;
+    transition-duration: 0.2s;
+    transition-timing-function: ease;
     cursor: text;
   }
   .form label:focus-within .label-text, .form input:not([value=""]) + .label-text {
