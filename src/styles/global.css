@@ -14,7 +14,7 @@
   }
 }
 
-body.color-scheme-changed {
+html.color-scheme-changed {
   --foreground-hsl: var(--white-hsl);
   --background-hsl: var(--very-dark-blue-hsl);
   --input-text-hsl: var(--white-hsl);
@@ -22,7 +22,7 @@ body.color-scheme-changed {
 }
 
 @media (prefers-color-scheme: dark) {
-  body.color-scheme-changed {
+  html.color-scheme-changed {
     --foreground-hsl: var(--very-dark-blue-text-hsl);
     --background-hsl: var(--very-light-gray-hsl);
     --input-text-hsl: var(--dark-gray-hsl);
