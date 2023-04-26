@@ -1,10 +1,13 @@
 ---
 import { getCountries } from '../api/countries.api'
+import { createCountryUrl } from '../util/createCountryUrl'
 import CountryCard from '../components/CountryCard.astro';
 import Filter from '../components/Filter.astro';
 import Header from '../components/Header.astro';
 import SearchBar from '../components/SearchBar.astro';
 import Layout from '../layouts/Layout.astro';
+
+export const prerender = true;
 
 const countries = await getCountries()
 
@@ -18,11 +21,6 @@ const regions = [
 
 const initialSearch =  Astro.url.searchParams.get("search") ?? ''
 const initialFilter =  Astro.url.searchParams.get("filter") ?? ''
-
-function createCountryUrl(path: string) {
-  const url = new URL(`/country/${path.toLowerCase()}`, import.meta.url)
-  return url.pathname
-}
 ---
 <Layout title="Countries">
   <Header />

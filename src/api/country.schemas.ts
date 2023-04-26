@@ -20,3 +20,16 @@ export const population = z.number()
 export const region = z.string().min(1)
 
 export const capital = z.array(z.string())
+
+export const subregion = z.string().min(1)
+
+export const tld = z.array(z.string())
+
+export const languages = z.record(z.string(), z.string())
+
+export const borders = z.array(z.string())
+
+export const currencies = z.record(z.string(), z.object({
+  name: z.string().min(1),
+  symbol: z.string().min(1)
+}))

@@ -1,0 +1,153 @@
+---
+import { getCountry } from "../../api/country.api";
+import { createCountryUrl } from '../../util/createCountryUrl'
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Icon from '../../components/Icon.astro';
+
+const { country: countryName = '' } = Astro.params;
+
+let country = await getCountry(countryName)
+---
+<Layout title={country.success ? country.data.name.common : 'Not Found'}>
+  <Header />
+
+  <div class="back-link-wrapper grid-padding">
+    <a href="/" class="link element" id="back-link">
+      <Icon icon="arrow-left" />
+      <span>Back</span>
+    </a>
+  </div>
+
+  {country.success && (
+    <div class="country grid-padding">
+      <div class="flag">
+        <img src={country.data.flags.svg} alt={country.data.flags.alt} />
+      </div>
+
+      <div class="content">
+        <h1>{country.data.name.common}</h1>
+
+        <p>
+          <strong>Native Name:</strong> {Object.values(country.data.name.nativeName)[0].official}<br />
+          <strong>Population:</strong> {country.data.population.toLocaleString()}<br />
+          <strong>Region:</strong> {country.data.region}<br />
+          <strong>Sub Region:</strong> {country.data.subregion}<br />
+          <strong>Capital:</strong> {country.data.capital}<br />
+          <strong>Top Level Domain:</strong> {country.data.tld.join(', ')}<br />
+          <strong>Currencies:</strong> {Object.values(country.data.currencies).map(({ name }) => name).join(', ')}<br />
+          <strong>Languages:</strong> {Object.values(country.data.languages).join(', ')}
+        </p>
+
+        {!!country.data.borders.length && (
+          <div class="borders">
+            <h2>Border Countries:</h2>
+            <ul>
+              {country.data.borders.map(border => (
+                <li><a href={createCountryUrl(border)} class="link element">{border}</a></li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </div>
+  )}
+</Layout>
+<script>
+  if (document.referrer && document.referrer.includes(document.location.host)) {
+    const backLink = document.getElementById('back-link') as HTMLAnchorElement;
+    backLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      history.back();
+    });
+  }
+</script>
+<style>
+  .link {
+    display: block;
+    color: currentColor;
+    text-decoration: none;
+    outline: none;
+    border: 1px solid transparent;
+    border-radius: 0.6rem;
+  }
+  .link:hover, .link:focus {
+    border-color: currentColor;
+  }
+  .back-link-wrapper {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+    display: flex;
+  }
+  .back-link-wrapper .link {
+    display: flex;
+    align-items: center;
+    padding: 1rem 5rem 1rem 3.5rem;
+    font-size: 1.8rem;
+  }
+  .back-link-wrapper .link span {
+    margin-left: 1.4rem;
+  }
+  .country {
+    display: flex;
+  }
+  @media (max-width: 896px) {
+    .country {
+      flex-direction: column;
+    }
+  }
+  .flag {
+    width: 50%;
+    margin-right: 5rem;
+    padding-right: 3rem;
+    flex-shrink: 0;
+  }
+  @media (max-width: 896px) {
+    .flag {
+      width: 100%;
+      margin-right: 0;
+    }
+  }
+  .content {
+    font-size: 1.6rem;
+    padding: 4rem 2rem;
+  }
+  .content h1 {
+    font-size: 3rem;
+    margin-bottom: 3rem;
+  }
+  .content p {
+    line-height: 2.4rem;
+  }
+  @media (min-width: 520px) {
+    .content p {
+      columns: 2;
+      break-after: left;
+    }
+  }
+  .borders {
+    margin-top: 6rem;
+  }
+  @media (min-width: 692px) {
+    .borders {
+      display: flex;
+    }
+  }
+  .borders h2 {
+    white-space: nowrap;
+    margin-right: 2rem;
+    margin-bottom: 2rem;
+  }
+  .borders ul {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .borders .link {
+    font-size: 1.4rem;
+    padding: 0.8rem 2rem;
+  }
+</style>
